@@ -7,7 +7,9 @@ build
 startup_*
 system_ARMCM*
 stm32f4*
+core_cm*
 
+!core_cm4*
 !startup_stm32f407xx*
 !startup_ARMCM4*
 !system_ARMCM4*
