@@ -131,7 +131,7 @@ void fix_update(void) {
 
     // MX_USB_HOST_Process();
     // /* USER CODE BEGIN 3 */
-    key_codes = query_keys();
+    // key_codes = query_keys();
 
     // player update
     if (!is_stage_finished) {
@@ -331,7 +331,7 @@ void update(uint8_t _key_codes) {
     uint16_t         j          = 0;
     char             _text[100] = {0};
 
-    // key_codes = _key_codes;
+    key_codes = _key_codes;
     if (page_num == 0) {
         u8g2_FirstPage(&dsp);
     }
