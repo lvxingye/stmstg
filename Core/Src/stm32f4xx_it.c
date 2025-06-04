@@ -289,14 +289,15 @@ void OTG_FS_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
-    static uint8_t task_no = 0;
+    // static uint8_t task_no = 0;
     if (htim == (&htim6)) {
-        switch (task_no) {
-        case 0: fix_update(); ;break;
-        case 1: MX_USB_HOST_Process(); break;
-        default: break;
-        }
-        task_no = !task_no;
+      fix_update();
+        // switch (task_no) {
+        // case 0: ; ;break;
+        // case 1: MX_USB_HOST_Process(); break;
+        // default: break;
+        // }
+        // task_no = !task_no;
     }
 }
 /* USER CODE END 1 */

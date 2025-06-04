@@ -58,14 +58,14 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define TIM_PRESCALER 8399
-#define TIM_PEROID 49
+#define TIM_PEROID 99
 
 /* USER CODE BEGIN Private defines */
 // tim6 is mounted on APB1!!!
 // max clock for APB1 is 84mhz!!!
 #define TIM_UPDATE_FREQ (84000000.0f/((TIM_PRESCALER)+1)/((TIM_PEROID)+1))
 #define TIM_ELAPSED_PEROID (1.0f/(float32_t)(TIM_UPDATE_FREQ))
-#define FIX_UPDATE_TIME (TIM_ELAPSED_PEROID*2)
+#define FIX_UPDATE_TIME (TIM_ELAPSED_PEROID)
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

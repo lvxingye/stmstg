@@ -13,6 +13,8 @@
 #define PLAYER_RAD  2
 #define BULLET_RAD 1
 #define DANMUKU_COUNT 1
+#define ENEMY_BULLET_DAMAGE 1
+#define PLAYER_BULLET_DAMAGE 0.7F
 #define STAGE_STARTED 0
 #define STAGE_START 1
 #define STAGE_CLEAR 2
@@ -77,6 +79,6 @@ typedef struct player_struct {
 
 void game_init(void);
 void fix_update(void);
-void update(uint8_t _key_codes);
+void update(void);
 
 #endif

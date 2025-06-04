@@ -40,7 +40,7 @@ uint8_t is_inter_game_section(u8g2_t* u8g2, int16_t x0, int16_t y0, int16_t x1, 
 bullet_typedef*  get_new_bullet(void);
 void             remove_bullet(bullet_typedef* _bullet);
 danmuku_typedef* get_new_danmuku(uint8_t is_random);
-uint8_t          is_contact(float32_t pos1[2], float32_t pos2[2]);
+uint8_t          is_contact(float32_t pos1[2], float32_t pos2[2],float32_t rad);
 void             clear_danmuku(uint8_t type);
 
 // game functions
@@ -131,7 +131,7 @@ void fix_update(void) {
 
     // MX_USB_HOST_Process();
     // /* USER CODE BEGIN 3 */
-    key_codes = query_keys();
+    // key_codes = query_keys();
 
     // player update
     if (!is_stage_finished) {
@@ -191,7 +191,7 @@ void fix_update(void) {
                 }
 
                 // damage detection
-                if (is_contact(_bullet->pos, enemy.pos)) {
+                if (is_contact(_bullet->pos, enemy.pos,ENEMY_RAD)) {
                     enemy.health -= _bullet->damage;
                     if (enemy.health <= 0) {
                         enemy.health = 100.0f;
@@ -219,7 +219,7 @@ void fix_update(void) {
                 bullet->accel_vert    = 0.0f;
                 bullet->volocity_tang = 0.0f;
                 bullet->volocity_vert = 30.0f;
-                bullet->damage        = 0.7f;
+                bullet->damage        = PLAYER_BULLET_DAMAGE;
                 bullet->owner         = 2;
                 bullet->pos[0]        = player.cur_danmuku->centers[i][0];
                 bullet->pos[1]        = player.cur_danmuku->centers[i][1];
@@ -263,7 +263,7 @@ void fix_update(void) {
                 }
 
                 // damage detection
-                if (is_contact(_bullet->pos, player.pos)) {
+                if (is_contact(_bullet->pos, player.pos,PLAYER_RAD)) {
                     player.health -= _bullet->damage;
                     if (player.health <= 0) {
                         player.health = 0.0f;
@@ -287,7 +287,7 @@ void fix_update(void) {
                 bullet->accel_vert    = -5.0f;
                 bullet->volocity_tang = 0.0f;
                 bullet->volocity_vert = 30.0f;
-                bullet->damage        = 0;
+                bullet->damage        = ENEMY_BULLET_DAMAGE;
                 bullet->owner         = 1;
                 bullet->pos[0]        = enemy.pos[0];
                 bullet->pos[1]        = enemy.pos[1];
@@ -324,14 +324,15 @@ void fix_update(void) {
     game_time += FIX_UPDATE_TIME;
 }
 
-void update(uint8_t _key_codes) {
+void update(void) {
     static uint8_t   page_num   = 0;
     static float32_t start_time = 0.0F;
     bullet_typedef*  _bullet    = NULL;
     uint16_t         j          = 0;
     char             _text[100] = {0};
 
-    // key_codes = _key_codes;
+    key_codes = query_keys();
+
     if (page_num == 0) {
         u8g2_FirstPage(&dsp);
     }
@@ -574,10 +575,10 @@ uint8_t is_inter_game_section(u8g2_t* u8g2, int16_t x0, int16_t y0, int16_t x1, 
     return 1;
 }
 
-uint8_t is_contact(float32_t pos1[2], float32_t pos2[2]) {
+uint8_t is_contact(float32_t pos1[2], float32_t pos2[2],float32_t rad) {
     return ((pos2[0] - pos1[0]) * (pos2[0] - pos1[0]) +
             (pos2[1] - pos1[1]) * (pos2[1] - pos1[1])) <=
-           (BULLET_RAD + ENEMY_RAD) * (BULLET_RAD + ENEMY_RAD);
+           (BULLET_RAD + rad) * (BULLET_RAD + rad);
 }
 
 // type:  0: enemy   1:player;
