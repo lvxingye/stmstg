@@ -430,7 +430,7 @@ void StartGraphicTask(void* argument) {
     /* USER CODE BEGIN StartGraphicTask */
     /* Infinite loop */
     for (;;) {
-        update(key_codes_);
+        update();
         osDelay(1);
     }
     /* USER CODE END StartGraphicTask */
