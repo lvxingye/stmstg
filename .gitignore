@@ -1,0 +1,15 @@
+build
+# .vscode
+*.elf
+*.hex
+*.o
+*.obj
+startup_*
+system_ARMCM*
+stm32f4*
+
+!startup_stm32f407xx*
+!startup_ARMCM4*
+!system_ARMCM4*
+!stm32f407*
+!stm32f4xx*

@@ -1,0 +1,18 @@
+Diagnostics:
+  ClangTidy:
+    Add:
+      [
+        performance-*,
+        bugprone-*,
+        portability-*,
+        modernize-*,
+      ]
+    Remove: modernize-use-trailing-return-type
+    CheckOptions:
+      WarnOnFloatingPointNarrowingConversion: false
+      
+CompileFlags:
+  Compiler: arm-none-eabi-gcc
+  Add: [--target=arm-none-eabi,-I/usr/arm-none-eabi/include]
+
+
