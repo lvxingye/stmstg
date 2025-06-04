@@ -40,8 +40,12 @@ uint8_t is_inter_game_section(u8g2_t* u8g2, int16_t x0, int16_t y0, int16_t x1, 
 bullet_typedef*  get_new_bullet(void);
 void             remove_bullet(bullet_typedef* _bullet);
 danmuku_typedef* get_new_danmuku(uint8_t is_random);
-uint8_t          is_contact(float32_t pos1[2], float32_t pos2[2],float32_t rad);
+uint8_t          is_contact(float32_t pos1[2], float32_t pos2[2], float32_t rad);
 void             clear_danmuku(uint8_t type);
+uint8_t pos_update_0(float32_t time, float32_t dir[2], float32_t pos_start[2], float32_t pos_out[2],
+                     uint8_t arg1, void* arg2);
+uint8_t pos_update_player(float32_t time, float32_t dir[2], float32_t pos_start[2],
+                          float32_t pos_out[2], uint8_t arg1, void* arg2);
 
 // game functions
 // enemy danmuku init
@@ -173,12 +177,12 @@ void fix_update(void) {
             _bullet = player.cur_danmuku->bullets[i];
             if (_bullet) {
 
-                _bullet->volocity_vert += _bullet->accel_vert * FIX_UPDATE_TIME;
-                _bullet->direction[0] = 0.0f;
-                _bullet->direction[1] = -1.0f;
-
-                _bullet->pos[1] += _bullet->volocity_vert * FIX_UPDATE_TIME * -1.0f;
-
+                _bullet->pos_update_callback(game_time - _bullet->shoot_time,
+                                             NULL,
+                                             _bullet->init_pos,
+                                             _bullet->pos,
+                                             0,
+                                             NULL);
                 if (!is_inter_game_section(&dsp,
                                            (int16_t)(_bullet->pos[0] - BULLET_RAD),
                                            (int16_t)(_bullet->pos[1] - BULLET_RAD),
@@ -191,7 +195,7 @@ void fix_update(void) {
                 }
 
                 // damage detection
-                if (is_contact(_bullet->pos, enemy.pos,ENEMY_RAD)) {
+                if (is_contact(_bullet->pos, enemy.pos, ENEMY_RAD)) {
                     enemy.health -= _bullet->damage;
                     if (enemy.health <= 0) {
                         enemy.health = 100.0f;
@@ -214,18 +218,15 @@ void fix_update(void) {
             shoot_time_player = 0.0f;
             // shoot_time = 0.0f;
             for (int i = 0; i < player.cur_danmuku->center_cnt; i++) {   // bullet init
-                bullet                = get_new_bullet();
-                bullet->accel_tang    = 0.0f;
-                bullet->accel_vert    = 0.0f;
-                bullet->volocity_tang = 0.0f;
-                bullet->volocity_vert = 30.0f;
-                bullet->damage        = PLAYER_BULLET_DAMAGE;
-                bullet->owner         = 2;
-                bullet->pos[0]        = player.cur_danmuku->centers[i][0];
-                bullet->pos[1]        = player.cur_danmuku->centers[i][1];
-                bullet->direction[0]  = 0;
-                bullet->direction[1]  = -1.0f;
-
+                bullet                      = get_new_bullet();
+                bullet->damage              = PLAYER_BULLET_DAMAGE;
+                bullet->owner               = 2;
+                bullet->init_pos[0]         = player.cur_danmuku->centers[i][0];
+                bullet->init_pos[1]         = player.cur_danmuku->centers[i][1];
+                bullet->shoot_time          = game_time;
+                bullet->direction[0]        = 0;
+                bullet->direction[1]        = -1.0f;
+                bullet->pos_update_callback = pos_update_player;
                 player.cur_danmuku->bullets[player.cur_danmuku->bullet_cnt++] = bullet;
             }
         }
@@ -234,23 +235,13 @@ void fix_update(void) {
         for (uint16_t i = 0; i < enemy.cur_danmuku->bullet_cnt; i++) {   // update previous bullets
             _bullet = enemy.cur_danmuku->bullets[i];
             if (_bullet) {
-                arm_sqrt_f32(_bullet->direction[0] * _bullet->direction[0] +
-                                 _bullet->direction[1] * _bullet->direction[1],
-                             &normalization_coef);
-                if (normalization_coef) {   // normalization
-                    _bullet->direction[0] /= normalization_coef;
-                    _bullet->direction[1] /= normalization_coef;
-                }
-                _bullet->volocity_tang += _bullet->accel_tang * FIX_UPDATE_TIME;
-                _bullet->volocity_vert += _bullet->accel_vert * FIX_UPDATE_TIME;
-                _bullet->direction[0] =
-                    _bullet->volocity_vert * FIX_UPDATE_TIME * _bullet->direction[0] -
-                    _bullet->volocity_tang * FIX_UPDATE_TIME * _bullet->direction[1];
-                _bullet->direction[1] =
-                    _bullet->volocity_vert * FIX_UPDATE_TIME * _bullet->direction[1] +
-                    _bullet->volocity_tang * FIX_UPDATE_TIME * _bullet->direction[0];
-                _bullet->pos[0] += _bullet->direction[0];
-                _bullet->pos[1] += _bullet->direction[1];
+
+                _bullet->pos_update_callback(game_time - _bullet->shoot_time,
+                                             _bullet->direction,
+                                             _bullet->init_pos,
+                                             _bullet->pos,
+                                             0,
+                                             NULL);
 
                 if (!is_inter_game_section(&dsp,
                                            (int16_t)(_bullet->pos[0] - BULLET_RAD),
@@ -263,10 +254,10 @@ void fix_update(void) {
                 }
 
                 // damage detection
-                if (is_contact(_bullet->pos, player.pos,PLAYER_RAD)) {
+                if (is_contact(_bullet->pos, player.pos, PLAYER_RAD)) {
                     player.health -= _bullet->damage;
                     if (player.health <= 0) {
-                        player.health = 0.0f;
+                        player.health     = 0.0f;
                         danmuku_time      = 0.0f;
                         is_stage_finished = STAGE_END_INIT;
                         // change_danmuku();
@@ -283,18 +274,16 @@ void fix_update(void) {
             shoot_time_enemy = 0.0f;
             for (int i = 0; i < enemy.cur_danmuku->shots_per_fire; i++) {   // bullet init
                 bullet = get_new_bullet();   //(bullet_typedef*)malloc(sizeof(bullet_typedef));
-                bullet->accel_tang    = 0.0f;
-                bullet->accel_vert    = -5.0f;
-                bullet->volocity_tang = 0.0f;
-                bullet->volocity_vert = 30.0f;
-                bullet->damage        = ENEMY_BULLET_DAMAGE;
-                bullet->owner         = 1;
-                bullet->pos[0]        = enemy.pos[0];
-                bullet->pos[1]        = enemy.pos[1];
+                bullet->damage      = ENEMY_BULLET_DAMAGE;
+                bullet->owner       = 1;
+                bullet->init_pos[0] = enemy.pos[0];
+                bullet->init_pos[1] = enemy.pos[1];
+                bullet->shoot_time  = game_time;
                 bullet->direction[0] =
                     arm_cos_f32(enemy.cur_danmuku->bullet_ang * (float32_t)(i) + d_angle);
                 bullet->direction[1] =
                     arm_sin_f32(enemy.cur_danmuku->bullet_ang * (float32_t)(i) + d_angle);
+                bullet->pos_update_callback = pos_update_0;
 
                 enemy.cur_danmuku->bullets[enemy.cur_danmuku->bullet_cnt++] = bullet;
             }
@@ -461,9 +450,10 @@ void update(void) {
                 is_stage_finished = STAGE_START_INIT;
             }
             break;
-        case STAGE_END_INIT:start_time = game_time;   // NO BREAK!!!
-        case STAGE_END:            is_stage_finished = STAGE_END;
-            if (1||(game_time - start_time) <= 1.0f) {
+        case STAGE_END_INIT: start_time = game_time;   // NO BREAK!!!
+        case STAGE_END:
+            is_stage_finished = STAGE_END;
+            if (1 || (game_time - start_time) <= 1.0f) {
                 u8g2_DrawStr(&dsp,
                              GAME_SECTION_END_X / 2 - 16,
                              (GAME_SECTION_END_Y + GAME_SECTION_START_Y) / 2 - 16,
@@ -494,13 +484,12 @@ void update(void) {
         &dsp,
         HEALTH_SECTION_START_X,
         61,
-        (u8g2_uint_t)((HEALTH_SECTION_END_X - HEALTH_SECTION_START_X) * (player.health) /
-                      100.0f));
-    u8g2_DrawHLine(&dsp,
-                   HEALTH_SECTION_START_X,
-                   62,
-                   (u8g2_uint_t)((HEALTH_SECTION_END_X - HEALTH_SECTION_START_X) *
-                                 (player.health) / 100.0f));
+        (u8g2_uint_t)((HEALTH_SECTION_END_X - HEALTH_SECTION_START_X) * (player.health) / 100.0f));
+    u8g2_DrawHLine(
+        &dsp,
+        HEALTH_SECTION_START_X,
+        62,
+        (u8g2_uint_t)((HEALTH_SECTION_END_X - HEALTH_SECTION_START_X) * (player.health) / 100.0f));
     u8g2_DrawFrame(&dsp,
                    INFO_SECTION_START_X,
                    INFO_SECTION_START_Y,
@@ -575,10 +564,9 @@ uint8_t is_inter_game_section(u8g2_t* u8g2, int16_t x0, int16_t y0, int16_t x1, 
     return 1;
 }
 
-uint8_t is_contact(float32_t pos1[2], float32_t pos2[2],float32_t rad) {
+uint8_t is_contact(float32_t pos1[2], float32_t pos2[2], float32_t rad) {
     return ((pos2[0] - pos1[0]) * (pos2[0] - pos1[0]) +
-            (pos2[1] - pos1[1]) * (pos2[1] - pos1[1])) <=
-           (BULLET_RAD + rad) * (BULLET_RAD + rad);
+            (pos2[1] - pos1[1]) * (pos2[1] - pos1[1])) <= (BULLET_RAD + rad) * (BULLET_RAD + rad);
 }
 
 // type:  0: enemy   1:player;
@@ -600,6 +588,32 @@ void clear_danmuku(uint8_t type) {
             player.cur_danmuku->bullets[i] = NULL;
         }
     }
+}
+
+uint8_t pos_update_player(float32_t time, float32_t dir[2], float32_t pos_start[2],
+                          float32_t pos_out[2], uint8_t arg1, void* arg2) {
+    const float32_t volocity = 30.0f;
+    pos_out[0]               = pos_start[0];
+    pos_out[1]               = pos_start[1] - volocity * time;
+    return 0;
+}
+
+uint8_t pos_update_0(float32_t time, float32_t dir[2], float32_t pos_start[2], float32_t pos_out[2],
+                     uint8_t arg1, void* arg2) {
+    const float32_t const_accer = 20.0f, const_volocity = 20.0f;
+    float32_t       accer = 0.0f, volocity = 0.0f, normalization_coef = 0.0f;
+    arm_sqrt_f32(dir[0] * dir[0] + dir[1] * dir[1], &normalization_coef);
+    if (normalization_coef) {   // normalization
+        dir[0] /= normalization_coef;
+        dir[1] /= normalization_coef;
+    }
+
+    // volocity = const_accer*time;
+
+    pos_out[0] = pos_start[0] + dir[0] * const_volocity * time;
+    pos_out[1] = pos_start[1] + dir[1] * (const_volocity * time) + 0.5f * const_accer * time * time;
+
+    return 0;
 }
 // hardware driver functions
 uint8_t dsp_hw_iic_msg_callback(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_ptr) {

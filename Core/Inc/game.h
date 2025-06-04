@@ -44,10 +44,12 @@
 
 
 typedef struct bullet_struct {
-    float32_t volocity_vert, volocity_tang, accel_vert, accel_tang;
+    // float32_t volocity_vert, volocity_tang, accel_vert, accel_tang;
+    float32_t shoot_time;
     float32_t damage;
-    float32_t direction[2], pos[2];
+    float32_t direction[2], pos[2],init_pos[2];
     uint8_t   owner;
+    uint8_t (*pos_update_callback)(float32_t time,float32_t dir[2],float32_t pos_start[2],float32_t pos_out[2],uint8_t arg1,void* arg2);
 } bullet_typedef;
 
 typedef struct danmuku_struct {
