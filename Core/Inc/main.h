@@ -63,7 +63,7 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 #define TIM_ELAPSED_PEROID (1.0f/(float32_t)(FIX_UPDATE_FREQ))
 #define FIX_UPDATE_FREQ (72000000.0f/((TIM_PRESCALER)+1)/((TIM_PEROID)+1))
-#define FIX_UPDATE_TIME (TIM_ELAPSED_PEROID*2)
+#define FIX_UPDATE_TIME (TIM_ELAPSED_PEROID)
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

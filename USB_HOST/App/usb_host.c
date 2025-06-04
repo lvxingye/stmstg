@@ -32,7 +32,7 @@
 /* USER CODE BEGIN PV */
 /* Private variables
  * ---------------------------------------------------------*/
-
+uint8_t status = 0;
 /* USER CODE END PV */
 
 /* USER CODE BEGIN PFP */
@@ -64,7 +64,8 @@ uint8_t query_keys(void) {
     HID_KEYBD_Info_TypeDef* k_pinfo;
     static uint8_t          key_codes = 0;
     if (Appli_state == APPLICATION_READY) {
-        if (USBH_HID_GetDeviceType(&hUsbHostFS) == HID_KEYBOARD) {
+        if (status || (USBH_HID_GetDeviceType(&hUsbHostFS) == HID_KEYBOARD)) {
+            status  = 1;
             k_pinfo = USBH_HID_GetKeybdInfo(&hUsbHostFS); /* get keybrd info */
 
             if (k_pinfo != NULL) {
@@ -126,17 +127,19 @@ static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
 {
   /* USER CODE BEGIN CALL_BACK_1 */
     switch (id) {
-    case HOST_USER_SELECT_CONFIGURATION: break;
+    case HOST_USER_SELECT_CONFIGURATION: status = 0; break;
 
     case HOST_USER_DISCONNECTION: Appli_state = APPLICATION_DISCONNECT; break;
 
     case HOST_USER_CLASS_ACTIVE:
         Appli_state = APPLICATION_READY;
+        status      = 0;
         printf("connected...\r\n");
         break;
 
     case HOST_USER_CONNECTION:
         Appli_state = APPLICATION_START;
+        status      = 0;
         printf("connecting...\r\n");
         break;
 
