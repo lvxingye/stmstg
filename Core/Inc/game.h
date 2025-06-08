@@ -48,7 +48,7 @@ typedef struct bullet_struct {
     float32_t shoot_time;
     float32_t damage;
     float32_t direction[2], pos[2], init_pos[2];
-    uint8_t   owner;
+    uint8_t   param;
     // uint8_t (*pos_update_callback)(float32_t time,float32_t dir[2],float32_t
     // pos_start[2],float32_t pos_out[2],uint8_t arg1,void* arg2);
 } bullet_typedef;
@@ -62,7 +62,7 @@ typedef struct danmuku_struct {
     float32_t (*centers)[2], (*trans_dir)[2];
     uint8_t  center_cnt, shots_per_fire;
     uint16_t bullet_cnt;
-    bullet_typedef* (*bullet_init_callback)(uint8_t fire_cnt, void* param);
+    bullet_typedef* (*bullet_init_callback)(uint16_t fire_cnt, void* param);
     uint8_t (*bullet_update_callback)(bullet_typedef* bullet, float32_t time, uint8_t arg1,
                                       void* arg2);
     uint8_t (*fire_callback)(struct danmuku_struct* danmuku, float32_t* time);
