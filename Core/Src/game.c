@@ -65,80 +65,82 @@ void danmuku_init(danmuku_typedef* danmuku) {
     float32_t(*centers)[2] = (float32_t(*)[2])malloc(3 * sizeof(float32_t[2]));
     float32_t* angle       = (float32_t*)malloc(sizeof(float32_t));
 
-    danmuku[0].name                   = "境符「波与粒的境界」";
-    danmuku[0].centers                = NULL;
-    danmuku[0].center_cnt             = 1;
-    danmuku[0].fire_intv              = 0.1f;
-    danmuku[0].shots_per_fire         = 8;
-    danmuku[0].bullet_ang             = 45.0f * PI / 180.0f;
-    danmuku[0].ang_a                  = -150 * PI / 180.0f;
-    danmuku[0].ang_v                  = 0;
-    danmuku[0].translation_a          = 0;
-    danmuku[0].translation_v          = 0;
-    danmuku[0].duration               = 60.0f;
-    danmuku[0].cur_time               = 0;
-    danmuku[0].bullet_cnt             = 0;
-    danmuku[0].trans_dir              = NULL;
-    danmuku[0].bullet_update_callback = bullet_update_0;
-    danmuku[0].bullet_init_callback   = bullet_init_0;
-    danmuku[0].fire_callback          = fire_0;
-    danmuku[0].param                  = (void*)angle;
-    *(float32_t*)(danmuku[0].param)   = 0.0f;
+    danmuku[0].name                    = "境符「波与粒的境界」";
+    danmuku[0].centers                 = NULL;
+    danmuku[0].center_cnt              = 1;
+    danmuku[0].fire_intv               = 0.1f;
+    danmuku[0].shots_per_fire          = 8;
+    danmuku[0].bullet_ang              = 45.0f * PI / 180.0f;
+    danmuku[0].ang_a                   = -150 * PI / 180.0f;
+    danmuku[0].ang_v                   = 0;
+    danmuku[0].translation_a           = 0;
+    danmuku[0].translation_v           = 0;
+    danmuku[0].duration                = 60.0f;
+    danmuku[0].cur_time                = 0;
+    danmuku[0].bullet_cnt              = 0;
+    danmuku[0].trans_dir               = NULL;
+    danmuku[0].bullet_update_callback  = bullet_update_0;
+    danmuku[0].bullet_init_callback    = bullet_init_0;
+    danmuku[0].fire_callback           = fire_0;
+    danmuku[0].danmuku_update_callback = danmuku_update_0;
+    danmuku[0].param                   = (void*)angle;
+    *(float32_t*)(danmuku[0].param)    = 0.0f;
     memset((bullet_typedef*)(danmuku[0].bullets), 0x00, 500 * sizeof(bullet_typedef*));
 
 
-    centers[0][0]                     = 40.0f;
-    centers[0][1]                     = 15.0f;
-    centers[1][0]                     = 40.0f - 20.0f;
-    centers[1][1]                     = 15.0f + 5.0f;
-    centers[2][0]                     = 40.0f + 20.0f;
-    centers[2][1]                     = 15.0f + 5.0f;
-    danmuku[1].name                   = "？？？";
-    danmuku[1].centers                = centers;
-    danmuku[1].center_cnt             = 3;
-    danmuku[1].fire_intv              = 0.05f;
-    danmuku[1].shots_per_fire         = 1;
-    danmuku[1].bullet_ang             = 2.0f * PI;
-    danmuku[1].ang_a                  = -150 * PI / 180.0f;
-    danmuku[1].ang_v                  = 0;
-    danmuku[1].translation_a          = 0;
-    danmuku[1].translation_v          = 0;
-    danmuku[1].duration               = 60.0f;
-    danmuku[1].cur_time               = 0;
-    danmuku[1].bullet_cnt             = 0;
-    danmuku[1].trans_dir              = NULL;
-    danmuku[1].bullet_update_callback = bullet_update_1;
-    danmuku[1].bullet_init_callback   = bullet_init_1;
-    danmuku[1].fire_callback          = fire_1;
+    centers[0][0]                      = 40.0f;
+    centers[0][1]                      = 15.0f;
+    centers[1][0]                      = 40.0f - 20.0f;
+    centers[1][1]                      = 15.0f + 5.0f;
+    centers[2][0]                      = 40.0f + 20.0f;
+    centers[2][1]                      = 15.0f + 5.0f;
+    danmuku[1].name                    = "？？？";
+    danmuku[1].centers                 = centers;
+    danmuku[1].center_cnt              = 3;
+    danmuku[1].fire_intv               = 0.05f;
+    danmuku[1].shots_per_fire          = 1;
+    danmuku[1].bullet_ang              = 2.0f * PI;
+    danmuku[1].ang_a                   = -150 * PI / 180.0f;
+    danmuku[1].ang_v                   = 0;
+    danmuku[1].translation_a           = 0;
+    danmuku[1].translation_v           = 0;
+    danmuku[1].duration                = 60.0f;
+    danmuku[1].cur_time                = 0;
+    danmuku[1].bullet_cnt              = 0;
+    danmuku[1].trans_dir               = NULL;
+    danmuku[1].bullet_update_callback  = bullet_update_1;
+    danmuku[1].bullet_init_callback    = bullet_init_1;
+    danmuku[1].fire_callback           = fire_1;
+    danmuku[1].danmuku_update_callback = danmuku_update_1;
     memset((bullet_typedef*)(danmuku[1].bullets), 0x00, 500 * sizeof(bullet_typedef*));
 
-    danmuku[2].name                   = "境符「波与粒的境界」？？？";
-    danmuku[2].centers                = NULL;
-    danmuku[2].center_cnt             = 1;
-    danmuku[2].fire_intv              = 0.1f;
-    danmuku[2].shots_per_fire         = 8;
-    danmuku[2].bullet_ang             = 45.0f * PI / 180.0f;
-    danmuku[2].ang_a                  = 100.0f * PI / 180.0f;
-    danmuku[2].ang_v                  = 0;
-    danmuku[2].translation_a          = 0;
-    danmuku[2].translation_v          = 0;
-    danmuku[2].duration               = 60.0f;
-    danmuku[2].cur_time               = 0;
-    danmuku[2].bullet_cnt             = 0;
-    danmuku[2].trans_dir              = NULL;
-    danmuku[2].bullet_update_callback = bullet_update_2;
-    danmuku[2].bullet_init_callback   = bullet_init_2;
-    danmuku[2].fire_callback          = fire_2;
-    danmuku[2].param                  = (void*)angle;
+    danmuku[2].name                    = "境符「波与粒的境界」？？？";
+    danmuku[2].centers                 = NULL;
+    danmuku[2].center_cnt              = 1;
+    danmuku[2].fire_intv               = 0.1f;
+    danmuku[2].shots_per_fire          = 8;
+    danmuku[2].bullet_ang              = 45.0f * PI / 180.0f;
+    danmuku[2].ang_a                   = 100.0f * PI / 180.0f;
+    danmuku[2].ang_v                   = 0;
+    danmuku[2].translation_a           = 0;
+    danmuku[2].translation_v           = 0;
+    danmuku[2].duration                = 60.0f;
+    danmuku[2].cur_time                = 0;
+    danmuku[2].bullet_cnt              = 0;
+    danmuku[2].trans_dir               = NULL;
+    danmuku[2].bullet_update_callback  = bullet_update_2;
+    danmuku[2].bullet_init_callback    = bullet_init_2;
+    danmuku[2].fire_callback           = fire_2;
+    danmuku[2].param                   = (void*)angle;
+    danmuku[2].danmuku_update_callback = danmuku_update_2;
     memset((bullet_typedef*)(danmuku[2].bullets), 0x00, 500 * sizeof(bullet_typedef*));
 }
 void enemy_init(enemy_typedef* enemy) {
-    enemy->name                    = "博丽灵梦";
-    enemy->pos[0]                  = 40;
-    enemy->pos[1]                  = 15;
-    enemy->health                  = 100.0f;
-    enemy->cur_danmuku             = danmuku_pool + 0;
-    enemy->danmuku_update_callback = danmuku_update_0;
+    enemy->name        = "博丽灵梦";
+    enemy->pos[0]      = 40;
+    enemy->pos[1]      = 15;
+    enemy->health      = 100.0f;
+    enemy->cur_danmuku = get_new_danmuku(0);
 }
 void player_init(player_typedef* player) {
     danmuku_typedef* danmuku = (danmuku_typedef*)malloc(sizeof(danmuku_typedef));
@@ -267,7 +269,7 @@ void fix_update(void) {
                         danmuku_time      = 0.0f;
                         is_stage_finished = STAGE_CLEAR_INIT;
                         score += 100;
-                        // change_danmuku();
+                        enemy.cur_danmuku = get_new_danmuku(0);
                     }
                     score++;
                     remove_bullet(_bullet);   // remove bullet which is out of the display
@@ -332,7 +334,7 @@ void fix_update(void) {
         if (!is_stage_finished) {
             enemy.cur_danmuku->fire_callback(enemy.cur_danmuku, &shoot_time_enemy);
         }
-        enemy.danmuku_update_callback(enemy.cur_danmuku, danmuku_time, 0, NULL);
+        enemy.cur_danmuku->danmuku_update_callback(enemy.cur_danmuku, danmuku_time, 0, NULL);
         if (!is_stage_finished) {
             shoot_time_enemy += FIX_UPDATE_TIME;   // update time
             shoot_time_player += FIX_UPDATE_TIME;
@@ -341,6 +343,7 @@ void fix_update(void) {
         if (danmuku_time >= enemy.cur_danmuku->duration) {
             danmuku_time      = 0.0f;
             is_stage_finished = STAGE_TIME_UP_INIT;
+            enemy.cur_danmuku = get_new_danmuku(0);
             danmuku_finish_cnt++;
         }
     }
@@ -574,8 +577,9 @@ void remove_bullet(bullet_typedef* _bullet) {
 }
 
 danmuku_typedef* get_new_danmuku(uint8_t is_random) {
-
-    return NULL;
+    static uint8_t danmuku_no = 0;
+    danmuku_no                = !danmuku_no;
+    return danmuku_pool + danmuku_no;
 }
 uint8_t is_inter_game_section(u8g2_t* u8g2, int16_t x0, int16_t y0, int16_t x1, int16_t y1) {
     UNUSED(u8g2);
@@ -790,26 +794,27 @@ uint8_t fire_2(struct danmuku_struct* danmuku, float32_t* time) {
     return 0;
 }
 bullet_typedef* bullet_init_1(uint8_t fire_cnt, void* param) {
-    // param: center position
-    float32_t       norm_coef = 0.0f;
-    bullet_typedef* bullet    = get_new_bullet();
-    bullet->damage            = ENEMY_BULLET_DAMAGE;
-    bullet->init_pos[0]       = ((float32_t*)param)[0];
-    bullet->init_pos[1]       = ((float32_t*)param)[1];
-    bullet->pos[0]            = bullet->init_pos[0];
-    bullet->pos[1]            = bullet->init_pos[1];
-    bullet->direction[0]      = player.pos[0] - bullet->init_pos[0];
-    bullet->direction[1]      = player.pos[1] - bullet->init_pos[1];
-    bullet->shoot_time        = game_time;
-    arm_sqrt_f32(
-        bullet->direction[0] * bullet->direction[0] + bullet->direction[1] * bullet->direction[1],
-        &norm_coef);
-    if (norm_coef) {   // normalization
-        bullet->direction[0] /= norm_coef;
-        bullet->direction[1] /= norm_coef;
-    }
+    // // param: center position
+    // float32_t       norm_coef = 0.0f;
+    // bullet_typedef* bullet    = get_new_bullet();
+    // bullet->damage            = ENEMY_BULLET_DAMAGE;
+    // bullet->init_pos[0]       = ((float32_t*)param)[0];
+    // bullet->init_pos[1]       = ((float32_t*)param)[1];
+    // bullet->pos[0]            = bullet->init_pos[0];
+    // bullet->pos[1]            = bullet->init_pos[1];
+    // bullet->direction[0]      = player.pos[0] - bullet->init_pos[0];
+    // bullet->direction[1]      = player.pos[1] - bullet->init_pos[1];
+    // bullet->shoot_time        = game_time;
+    // arm_sqrt_f32(
+    //     bullet->direction[0] * bullet->direction[0] + bullet->direction[1] *
+    //     bullet->direction[1], &norm_coef);
+    // if (norm_coef) {   // normalization
+    //     bullet->direction[0] /= norm_coef;
+    //     bullet->direction[1] /= norm_coef;
+    // }
 
-    return bullet;
+    // return bullet;
+    return NULL;
 }
 uint8_t bullet_update_1(bullet_typedef* bullet, float32_t time, uint8_t arg1, void* arg2) {
     const float32_t v = 25.0f;
@@ -820,45 +825,45 @@ uint8_t danmuku_update_1(danmuku_typedef* danmuku, float32_t time, uint8_t arg1,
 uint8_t fire_1(struct danmuku_struct* danmuku, float32_t* time) {
     // const float32_t angle_1_deg[]={0.9998476951615872f,0.01745240613960778f};//complex
     static float32_t angle      = 0.0f;
-    static float32_t _last_fire = 0.0f, _last_start = 0.0f;
+    static float32_t _last_fire = 0.0f, _last_start = -1.1f;
     static uint8_t   is_fire   = 1;
+    static float32_t player_pos[]={0.0f,0.0f};
     float32_t        norm_coef = 0.0f, angle_complex[] = {0.0f, 0.0f};
     bullet_typedef*  bullet;
     if ((*time - _last_start) <= 1.0f) {
         if (is_fire && (*time - _last_fire) >= danmuku->fire_intv) {
             _last_fire = *time;
             for (int j = 0; j < enemy.cur_danmuku->center_cnt; j++) {
-                for (int i = 0; i < danmuku->shots_per_fire; i++) {   // bullet init
-                    bullet               = get_new_bullet();
-                    angle_complex[0]     = arm_cos_f32(0.5235987755983334f * angle);
-                    angle_complex[1]     = arm_sin_f32(0.5235987755983334f * angle);
-                    bullet->damage       = ENEMY_BULLET_DAMAGE;
-                    bullet->init_pos[0]  = (enemy.cur_danmuku->centers[j])[0];
-                    bullet->init_pos[1]  = (enemy.cur_danmuku->centers[j])[1];
-                    bullet->pos[0]       = bullet->init_pos[0];
-                    bullet->pos[1]       = bullet->init_pos[1];
-                    bullet->direction[0] = player.pos[0] - bullet->init_pos[0];
-                    bullet->direction[1] = player.pos[1] - bullet->init_pos[1];
-                    // complex multiplication
-                    bullet->direction[0] = bullet->direction[0] * angle_complex[0] -
-                                           bullet->direction[1] * angle_complex[1];
-                    bullet->direction[1] = bullet->direction[0] * angle_complex[1] +
-                                           bullet->direction[1] * angle_complex[0];
-                    bullet->shoot_time = game_time;
-                    arm_sqrt_f32(bullet->direction[0] * bullet->direction[0] +
-                                     bullet->direction[1] * bullet->direction[1],
-                                 &norm_coef);
-                    if (norm_coef) {   // normalization
-                        bullet->direction[0] /= norm_coef;
-                        bullet->direction[1] /= norm_coef;
-                    }
-                    if (danmuku->bullet_cnt < 500) {
-                        danmuku->bullets[danmuku->bullet_cnt] = bullet;
-                        danmuku->bullet_cnt++;
-                    }
-                    // plus 1 degree
-                    angle = arm_sin_f32(6.28318530716f * (*time));   // 4*pi*time
+                // bullet init
+                bullet               = get_new_bullet();
+                angle_complex[0]     = arm_cos_f32(0.3490658444444444f * angle);
+                angle_complex[1]     = arm_sin_f32(0.3490658444444444f * angle);
+                bullet->damage       = ENEMY_BULLET_DAMAGE;
+                bullet->init_pos[0]  = (enemy.cur_danmuku->centers[j])[0];
+                bullet->init_pos[1]  = (enemy.cur_danmuku->centers[j])[1];
+                bullet->pos[0]       = bullet->init_pos[0];
+                bullet->pos[1]       = bullet->init_pos[1];
+                bullet->direction[0] = player_pos[0]-bullet->init_pos[0];
+                bullet->direction[1] = player_pos[1]-bullet->init_pos[1];
+                // complex multiplication
+                bullet->direction[0] = bullet->direction[0] * angle_complex[0] -
+                                       bullet->direction[1] * angle_complex[1];
+                bullet->direction[1] = bullet->direction[0] * angle_complex[1] +
+                                       bullet->direction[1] * angle_complex[0];
+                bullet->shoot_time = game_time;
+                arm_sqrt_f32(bullet->direction[0] * bullet->direction[0] +
+                                 bullet->direction[1] * bullet->direction[1],
+                             &norm_coef);
+                if (norm_coef) {   // normalization
+                    bullet->direction[0] /= norm_coef;
+                    bullet->direction[1] /= norm_coef;
                 }
+                if (danmuku->bullet_cnt < 500) {
+                    danmuku->bullets[danmuku->bullet_cnt] = bullet;
+                    danmuku->bullet_cnt++;
+                }
+                // plus 1 degree
+                angle = arm_cos_f32(3.5f*PI * (*time));   // 4*pi*time
             }
         }
     } else {
@@ -866,6 +871,8 @@ uint8_t fire_1(struct danmuku_struct* danmuku, float32_t* time) {
             _last_start = *time;
             is_fire     = !is_fire;
             angle       = 0.0f;
+            player_pos[0]=player.pos[0];
+            player_pos[1]=player.pos[1];
         }
     }
     return 0;

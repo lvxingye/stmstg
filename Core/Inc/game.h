@@ -66,6 +66,8 @@ typedef struct danmuku_struct {
     uint8_t (*bullet_update_callback)(bullet_typedef* bullet, float32_t time, uint8_t arg1,
                                       void* arg2);
     uint8_t (*fire_callback)(struct danmuku_struct* danmuku, float32_t* time);
+    uint8_t (*danmuku_update_callback)(struct danmuku_struct* danmuku, float32_t time, uint8_t arg1,
+                                       void* arg2);
     void* param;
 } danmuku_typedef;
 
@@ -74,8 +76,6 @@ typedef struct enemy_struct {
     danmuku_typedef* cur_danmuku;
     float32_t        health;
     float32_t        pos[2];
-    uint8_t (*danmuku_update_callback)(danmuku_typedef* danmuku, float32_t time, uint8_t arg1,
-                                       void* arg2);
 } enemy_typedef;
 
 typedef struct player_struct {
