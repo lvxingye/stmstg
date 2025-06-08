@@ -96,7 +96,7 @@ void danmuku_init(danmuku_typedef* danmuku) {
     danmuku[1].centers                = centers;
     danmuku[1].center_cnt             = 3;
     danmuku[1].fire_intv              = 0.05f;
-    danmuku[1].shots_per_fire         = 8;
+    danmuku[1].shots_per_fire         = 1;
     danmuku[1].bullet_ang             = 2.0f * PI;
     danmuku[1].ang_a                  = -150 * PI / 180.0f;
     danmuku[1].ang_v                  = 0;
@@ -286,6 +286,8 @@ void fix_update(void) {
                 bullet->owner        = 2;
                 bullet->init_pos[0]  = player.cur_danmuku->centers[i][0];
                 bullet->init_pos[1]  = player.cur_danmuku->centers[i][1];
+                bullet->pos[0]       = bullet->init_pos[0];
+                bullet->pos[1]       = bullet->init_pos[1];
                 bullet->shoot_time   = game_time;
                 bullet->direction[0] = 0;
                 bullet->direction[1] = -1.0f;
@@ -342,6 +344,7 @@ void fix_update(void) {
         }
     }
     chk_rm_bullets(enemy.cur_danmuku);
+    chk_rm_bullets(player.cur_danmuku);
     game_time += FIX_UPDATE_TIME;
 }
 
@@ -382,11 +385,11 @@ void update(void) {
         // enemy.cur_danmuku->bullets[i - j] = enemy.cur_danmuku->bullets[i];
 
         // just display all the  bullets in the display area
-        if (_bullet && !is_inter_game_section(&dsp,
-                                              (int16_t)(_bullet->pos[0] - BULLET_RAD),
-                                              (int16_t)(_bullet->pos[1] - BULLET_RAD),
-                                              (int16_t)(_bullet->pos[0] + BULLET_RAD + 1),
-                                              (int16_t)(_bullet->pos[1] + BULLET_RAD + 1))) {
+        if (_bullet && is_inter_game_section(&dsp,
+                                             (int16_t)(_bullet->pos[0] - BULLET_RAD),
+                                             (int16_t)(_bullet->pos[1] - BULLET_RAD),
+                                             (int16_t)(_bullet->pos[0] + BULLET_RAD + 1),
+                                             (int16_t)(_bullet->pos[1] + BULLET_RAD + 1))) {
             u8g2_DrawFilledEllipse(&dsp,
                                    (uint16_t)(_bullet->pos[0]),
                                    (uint16_t)(_bullet->pos[1]),
@@ -530,14 +533,14 @@ void update(void) {
     // u8g2_SetFontMode(&dsp,U8G2_FONT_MODE_SOLID);
     // sprintf(_text, "%f", time);
     sprintf(_text,
-            "%02d.%01d",
+            "%02d.%02d",
             (uint16_t)(enemy.cur_danmuku->duration - danmuku_time),
             (uint16_t)((enemy.cur_danmuku->duration - danmuku_time) * 10) % 10);
-    u8g2_DrawStr(&dsp, 83, 3, _text);
-    sprintf(_text, "%4d", score);
-    u8g2_DrawStr(&dsp, 83, 19, _text);
-    sprintf(_text, "%4d", danmuku_finish_cnt);
-    u8g2_DrawStr(&dsp, 83, 35, _text);
+    u8g2_DrawStr(&dsp, 84, 3, _text);
+    sprintf(_text, "%5d", score);
+    u8g2_DrawStr(&dsp, 84, 19, _text);
+    sprintf(_text, "%5d", danmuku_finish_cnt);
+    u8g2_DrawStr(&dsp, 84, 35, _text);
     u8g2_NextPage(&dsp);
     page_num += 1;
     if (page_num & 0x08) {
@@ -623,23 +626,26 @@ void clear_danmuku(uint8_t type) {
 }
 
 void chk_rm_bullets(danmuku_typedef* danmuku) {
-    bullet_typedef** bullet_pool = danmuku->bullets;
+    bullet_typedef** _bullet_pool = danmuku->bullets;
     bullet_typedef*  _bullet;
     uint16_t         rm_cnt = 0;
     for (int i = 0; i < danmuku->bullet_cnt; i++) {
-        _bullet                 = bullet_pool[i];
-        bullet_pool[i - rm_cnt] = bullet_pool[i];
-        if (!is_inter_game_section(&dsp,
-                                   (int16_t)(_bullet->pos[0] - BULLET_RAD),
-                                   (int16_t)(_bullet->pos[1] - BULLET_RAD),
-                                   (int16_t)(_bullet->pos[0] + BULLET_RAD + 1),
-                                   (int16_t)(_bullet->pos[1] + BULLET_RAD + 1))) {
-            remove_bullet(_bullet);
+        _bullet                  = _bullet_pool[i];
+        _bullet_pool[i - rm_cnt] = _bullet_pool[i];
+        if (!_bullet || !is_inter_game_section(&dsp,
+                                               (int16_t)(_bullet->pos[0] - BULLET_RAD),
+                                               (int16_t)(_bullet->pos[1] - BULLET_RAD),
+                                               (int16_t)(_bullet->pos[0] + BULLET_RAD + 1),
+                                               (int16_t)(_bullet->pos[1] + BULLET_RAD + 1))) {
+            if (!_bullet) {
+                remove_bullet(_bullet);
+            }
+            rm_cnt++;
         }
     }
-    danmuku->bullet_cnt-=rm_cnt;
-    for (int i=danmuku->bullet_cnt; i<500; i++) {
-        bullet_pool[i]=NULL;
+    danmuku->bullet_cnt -= rm_cnt;
+    for (int i = danmuku->bullet_cnt; i < 500; i++) {
+        _bullet_pool[i] = NULL;
     }
 }
 
@@ -784,6 +790,8 @@ bullet_typedef* bullet_init_1(uint8_t fire_cnt, void* param) {
     bullet->damage            = ENEMY_BULLET_DAMAGE;
     bullet->init_pos[0]       = ((float32_t*)param)[0];
     bullet->init_pos[1]       = ((float32_t*)param)[1];
+    bullet->pos[0]            = bullet->init_pos[0];
+    bullet->pos[1]            = bullet->init_pos[1];
     bullet->direction[0]      = player.pos[0] - bullet->init_pos[0];
     bullet->direction[1]      = player.pos[1] - bullet->init_pos[1];
     bullet->shoot_time        = game_time;
@@ -809,19 +817,20 @@ uint8_t fire_1(struct danmuku_struct* danmuku, float32_t* time) {
     static float32_t _last_fire = 0.0f, _last_start = 0.0f;
     static uint8_t   is_fire   = 1;
     float32_t        norm_coef = 0.0f, angle_complex[] = {0.0f, 0.0f};
-    bullet_typedef*  bullet = get_new_bullet();
+    bullet_typedef*  bullet;
     if ((*time - _last_start) <= 1.0f) {
         if (is_fire && (*time - _last_fire) >= danmuku->fire_intv) {
             _last_fire = *time;
             for (int j = 0; j < enemy.cur_danmuku->center_cnt; j++) {
-                angle = 0.0f;
                 for (int i = 0; i < danmuku->shots_per_fire; i++) {   // bullet init
                     bullet               = get_new_bullet();
-                    angle_complex[0]     = arm_cos_f32(0.2617993877991667f * angle);
-                    angle_complex[1]     = arm_sin_f32(0.2617993877991667f * angle);
+                    angle_complex[0]     = arm_cos_f32(0.5235987755983334f * angle);
+                    angle_complex[1]     = arm_sin_f32(0.5235987755983334f * angle);
                     bullet->damage       = ENEMY_BULLET_DAMAGE;
                     bullet->init_pos[0]  = (enemy.cur_danmuku->centers[j])[0];
                     bullet->init_pos[1]  = (enemy.cur_danmuku->centers[j])[1];
+                    bullet->pos[0]       = bullet->init_pos[0];
+                    bullet->pos[1]       = bullet->init_pos[1];
                     bullet->direction[0] = player.pos[0] - bullet->init_pos[0];
                     bullet->direction[1] = player.pos[1] - bullet->init_pos[1];
                     // complex multiplication
@@ -842,13 +851,16 @@ uint8_t fire_1(struct danmuku_struct* danmuku, float32_t* time) {
                         danmuku->bullet_cnt++;
                     }
                     // plus 1 degree
-                    angle = arm_sin_f32(12.56637061432f * (*time));   // 4*pi*time
+                    angle = arm_sin_f32(6.28318530716f * (*time));   // 4*pi*time
                 }
             }
         }
     } else {
-        _last_start = *time;
-        is_fire     = !is_fire;
+        if (is_fire || (*time - _last_start) >= 2.0f) {
+            _last_start = *time;
+            is_fire     = !is_fire;
+            angle       = 0.0f;
+        }
     }
     return 0;
 }
