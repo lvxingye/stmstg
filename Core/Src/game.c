@@ -579,8 +579,9 @@ void remove_bullet(bullet_typedef* _bullet) {
 
 danmuku_typedef* get_new_danmuku(uint8_t is_random) {
     static uint8_t danmuku_no = 0;
-    danmuku_no                = !danmuku_no;
-    return danmuku_pool + 0;
+    danmuku_no                += 1;
+    danmuku_no%=3;
+    return danmuku_pool + danmuku_no;
 }
 uint8_t is_inter_game_section(u8g2_t* u8g2, int16_t x0, int16_t y0, int16_t x1, int16_t y1) {
     UNUSED(u8g2);
